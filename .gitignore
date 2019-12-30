@@ -60,3 +60,4 @@ buck-out/
 
 # Package
 package-lock.json
+/src/FirebaseConnection.js
