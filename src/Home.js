@@ -47,7 +47,8 @@ const Home = class HomeScreen extends Component {
             <View style={styles.body}>
 
               <View style={styles.sectionContainer}>
-                  <Text>Olá, {this.state.nome}</Text>
+                  <Text style={styles.mBottom40}>Olá, {this.state.nome}</Text>
+                  <Button color="#ec6b15" style={styles.buttonSend}  title="Acessar a Câmera" onPress={()=>this.props.navigation.navigate('Camera')} />
               </View>
 
             </View>
@@ -118,6 +119,9 @@ const styles = StyleSheet.create({
     buttonSend: {
         height: 40,
         color: '#ec6b15'
+    },
+    mBottom40: {
+        marginBottom: 40
     },
     background: {
         paddingBottom: 16,

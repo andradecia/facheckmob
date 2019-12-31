@@ -23,8 +23,8 @@ const Login = class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loginInput:'',
-            senhaInput:''
+            loginInput:'admin@teste.com',
+            senhaInput:'123456'
         };
 
         this.logar = this.logar.bind(this);
@@ -92,11 +92,11 @@ const Login = class LoginScreen extends Component {
                 <View style={styles.body}>
 
                 <View style={styles.sectionContainer}>
-                    <TextInput style={styles.input} onChangeText={(loginInput)=>this.setState({loginInput})} placeholder="LOGIN" />
+                    <TextInput value="admin@teste.com" style={styles.input} onChangeText={(loginInput)=>this.setState({loginInput})} placeholder="LOGIN" />
                 </View>
 
                 <View style={styles.sectionContainer}>
-                    <TextInput style={styles.input} onChangeText={(senhaInput)=>this.setState({senhaInput})} placeholder="SENHA" secureTextEntry={true} />
+                    <TextInput value="123456" style={styles.input} onChangeText={(senhaInput)=>this.setState({senhaInput})} placeholder="SENHA" secureTextEntry={true} />
                 </View>
 
                 <View style={styles.sectionContainer}>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         marginBottom: -192,
     },
     text: {
-        fontSize: 40,
+        fontSize: 36,
         textAlign: 'center',
         textTransform: 'uppercase',
         fontWeight: 'bold',
