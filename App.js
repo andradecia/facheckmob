@@ -3,7 +3,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import LoginScreen from './src/Login';
 import HomeScreen from './src/Home';
-import CameraScreen from './src/screens/Camera';
+import ScanScreen from './src/screens/Camera';
 
 const AppNavigator = createStackNavigator({
   Login: {
@@ -13,7 +13,7 @@ const AppNavigator = createStackNavigator({
     screen: HomeScreen
   },
   Camera: {
-    screen: CameraScreen
+    screen: ScanScreen
   }
 });
 

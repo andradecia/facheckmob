@@ -1,47 +1,51 @@
 import React, { Component } from 'react';
-import { View, text, StyleSheet } from 'react-native';
-import { RNCamera } from 'react-native-camera';
 
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 
-const Camera = class CameraScreen extends Component {
+import QRCodeScanner from 'react-native-qrcode-scanner';
 
-    static navigationOptions = {
-        title: 'Câmera',
-        header: null
-    }
+const Camera = class ScanScreen extends Component {
+  onSuccess = (e) => {
+    Linking
+      .openURL(e.data)
+      .catch(err => console.error('Ocorreu um erro ao abrir a URL', err));
+  }
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <RNCamera 
-                    style = {styles.camera} ref = {(camera)=>{
-                        this.camera = camera;
-                    }}
-                    type={ RNCamera.Constants.Type.back }
-                    androidCameraPermissionOptions={{
-                        title: 'Permission to use camera',
-                        message: 'We need your permission to use your camera',
-                        buttonPositive: 'Ok',
-                        buttonNegative: 'Cancel',
-                      }}
-                      onGoogleVisionBarcodesDetected={({ barcodes }) => {
-                        console.log(barcodes);
-                      }}
-                />
-            </View>
-        );
-    }
+  render() {
+    return (
+      <QRCodeScanner
+        onRead={this.onSuccess}
+        //flashMode={QRCodeScanner.Constants.FlashMode.torch}
+      />
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        flexDirection:'column',
-        backgroundColor:'#000000'
-    },
-    camera:{
-        flex:1
-    }
-})
+  centerText: {
+    flex: 1,
+    fontSize: 18,
+    padding: 32,
+    color: '#777',
+  },
+  textBold: {
+    fontWeight: '500',
+    color: '#000',
+  },
+  buttonText: {
+    fontSize: 21,
+    color: 'rgb(0,122,255)',
+  },
+  buttonTouchable: {
+    padding: 16,
+  },
+});
 
+AppRegistry.registerComponent('default', () => ScanScreen);
 export default Camera;

@@ -78,34 +78,48 @@ const Login = class LoginScreen extends Component {
         <>
             <StatusBar barStyle="dark-content" />
             <SafeAreaView>
-            <ScrollView
-                contentInsetAdjustmentBehavior="automatic"
-                style={styles.scrollView}>
-                <ImageBackground
-                accessibilityRole={'image'}
-                source={require('./icone_brand2.png')}
-                style={styles.background}
-                imageStyle={styles.logo}>
-                <Text style={styles.text}>Amult Checkin</Text>
-                </ImageBackground>
+                <ScrollView
+                    contentInsetAdjustmentBehavior="automatic"
+                    style={styles.scrollView}>
 
-                <View style={styles.body}>
+                    <ImageBackground
+                        accessibilityRole={'image'}
+                        source={require('./icone_brand2.png')}
+                        style={styles.background}
+                        imageStyle={styles.logo}>
+                        <Text style={styles.text}>Amult Checkin</Text>
+                    </ImageBackground>
 
-                <View style={styles.sectionContainer}>
-                    <TextInput value="admin@teste.com" style={styles.input} onChangeText={(loginInput)=>this.setState({loginInput})} placeholder="LOGIN" />
-                </View>
+                    <View style={styles.body}>
 
-                <View style={styles.sectionContainer}>
-                    <TextInput value="123456" style={styles.input} onChangeText={(senhaInput)=>this.setState({senhaInput})} placeholder="SENHA" secureTextEntry={true} />
-                </View>
+                        <View style={styles.sectionContainer}>
+                            <TextInput 
+                                value="admin@teste.com" 
+                                style={styles.input} 
+                                onChangeText={(loginInput)=>this.setState({loginInput})} 
+                                placeholder="LOGIN" />
+                        </View>
 
-                <View style={styles.sectionContainer}>
-                    <Button color="#ec6b15" style={styles.buttonSend} title="Entrar" onPress={this.logar} />
-                </View>
+                        <View style={styles.sectionContainer}>
+                            <TextInput 
+                                value="123456" 
+                                style={styles.input} 
+                                onChangeText={(senhaInput)=>this.setState({senhaInput})} 
+                                placeholder="SENHA" 
+                                secureTextEntry={true} />
+                        </View>
 
-                </View>
+                        <View style={styles.sectionContainer}>
+                            <Button 
+                                color="#ec6b15" 
+                                style={styles.buttonSend} 
+                                title="Entrar" 
+                                onPress={this.logar} />
+                        </View>
 
-            </ScrollView>
+                    </View>
+
+                </ScrollView>
             </SafeAreaView>
         </>
         );
