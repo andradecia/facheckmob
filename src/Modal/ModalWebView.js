@@ -16,6 +16,7 @@ const ModalWebView = props => (
   <Modal animationType="slide" transparent={false} visible={props.modalVisible}>
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <View style={{ width: width - 50, height: height - 70 }}>
+        <Text>{props.notify}</Text>
         <WebView
           automaticallyAdjustContentInsets={false}
           source={{ uri: props.url }}
@@ -36,7 +37,7 @@ const ModalWebView = props => (
         }}
       >
         <TouchableOpacity onPress={props.openLink}>
-          <Text>Abrir no navegador</Text>
+          <Text>Confirmar</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={props.handleButton}>
           <Text>Ler outro QRCode</Text>
@@ -50,6 +51,7 @@ ModalWebView.propTypes = {
 
   modalVisible: PropTypes.bool.isRequired,
   url: PropTypes.string.isRequired,
+  notify: PropTypes.string.isRequired,
   openLink: PropTypes.func.isRequired,
   handleButton: PropTypes.func.isRequired,
 
