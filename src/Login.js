@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import SysConn from './System';
 import {
     SafeAreaView,
     StyleSheet,
@@ -23,54 +22,66 @@ const Login = class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loginInput:'admin@teste.com',
-            senhaInput:'123456'
+            UserKey:123456,
+            UserLogin:'',
+            UserPassword:''
         };
-
-        this.logar = this.logar.bind(this);
-
-        // Deslogando usuário
-        SysConn.logout();
-        
     };
 
-    logar() {
-
-        // Monitorando login
-        SysConn.addAuthListener((user)=>{
-            
-            if(user) {
-                
-                SysConn.getUserInfo((info)=>{
-                    let nome = info.val().nome;
-                    this.props.navigation.navigate('Home', {nome});
-                });
-            }
-            
-        });
-
-        // Logando usuário
-        SysConn.login(this.state.loginInput, this.state.senhaInput)
-        .catch((error)=>{
+    login = () => {
         
-            switch(error.code) {
-                case "auth/invalid-email":
-                    alert("E-mail inválido");
-                    break;
-                case "auth/wrong-password":
-                    alert("Senha inválida");
-                    break;
-                case "auth/user-not-found":
-                    alert("Usuário não encontrado");
-                    break;
-                case "auth/network-request-failed":
-                    alert("A requisição falhou");
-                    break;
-                default:
-                    alert("Ocorreu um erro inesperado. Por favor, tente mais tarde.");
-                    break;
-            }
-        });
+        const {UserKey,UserLogin,UserPassword} = this.state;
+		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // Verifica Email
+        
+        if(UserLogin == "") {
+            alert("Informe seu Login");
+            //this.setState({email:'Please enter Email address'})
+		}
+		else if(UserPassword == "") {
+            alert("Informe sua Senha");
+            //this.setState({email:'Please enter password'})
+        }
+        
+		else {
+
+            fetch('https://www.colorbox.art.br/teste/app/login.php', {
+                method:'POST',
+                header: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                },
+                body:JSON.stringify({
+                    // we will pass our input data to server
+                    chave: UserKey,
+                    login: UserLogin,
+                    senha: UserPassword
+                })
+                
+            }).then((response) => response.json())
+                .then((responseJson) => {
+                    
+                    console.log(responseJson);
+                    
+                    if(responseJson.logado == 1) {
+                        console.log(responseJson.logado);
+                        this.props.navigation.navigate('Home', { 
+                            nome: UserLogin,
+                            area: responseJson.area,
+                            evento: responseJson.evento_nome
+                        });
+                    }
+                    else{
+
+                        alert("Erro ao acessar. Verifique seu login e senha");
+                    }
+
+                })
+                .catch((error) => {
+
+                    console.error(error);
+                });
+            
+        }
     }
 
     render(){
@@ -94,17 +105,15 @@ const Login = class LoginScreen extends Component {
 
                         <View style={styles.sectionContainer}>
                             <TextInput 
-                                value="admin@teste.com" 
                                 style={styles.input} 
-                                onChangeText={(loginInput)=>this.setState({loginInput})} 
+                                onChangeText={(UserLogin)=>this.setState({UserLogin})} 
                                 placeholder="LOGIN" />
                         </View>
 
                         <View style={styles.sectionContainer}>
                             <TextInput 
-                                value="123456" 
                                 style={styles.input} 
-                                onChangeText={(senhaInput)=>this.setState({senhaInput})} 
+                                onChangeText={(UserPassword)=>this.setState({UserPassword})} 
                                 placeholder="SENHA" 
                                 secureTextEntry={true} />
                         </View>
@@ -114,7 +123,7 @@ const Login = class LoginScreen extends Component {
                                 color="#ec6b15" 
                                 style={styles.buttonSend} 
                                 title="Entrar" 
-                                onPress={this.logar} />
+                                onPress={this.login} />
                         </View>
 
                     </View>

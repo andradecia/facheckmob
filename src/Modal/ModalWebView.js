@@ -7,7 +7,6 @@ import {
   Modal 
 } from "react-native";
 
-import { WebView } from "react-native-webview";
 import PropTypes from 'prop-types';
 
 const { width, height } = Dimensions.get("window");
@@ -15,31 +14,38 @@ const { width, height } = Dimensions.get("window");
 const ModalWebView = props => (
   <Modal animationType="slide" transparent={false} visible={props.modalVisible}>
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <View style={{ width: width - 50, height: height - 70 }}>
-        <Text>{props.notify}</Text>
-        <WebView
-          automaticallyAdjustContentInsets={false}
-          source={{ uri: props.url }}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          startInLoadingState={true}
-          style={{ flex: 1 }}
-        />
+      <View style={{ width: width - 50, height: height - 100 }}>
+        <Text>Evento {props.notify.codEvento}</Text>
+        <Text>{props.notify.nomeEvento}</Text>
+        <Text>Setor {props.notify.eventoArea}</Text>
+        <Text>Nome: {props.notify.usuarioNome}</Text>
+        <Text>Área: {props.notify.usuarioTipo}</Text>
       </View>
       <View
         style={{
-          backgroundColor: "#FFF",
-          height: 30,
-          paddingTop: 10,
-          width: width - 50,
+          height: 40,
           flexDirection: "row",
           justifyContent: "space-around"
         }}
       >
-        <TouchableOpacity onPress={props.openLink}>
-          <Text>Confirmar</Text>
+        <TouchableOpacity 
+          style = {{ 
+            backgroundColor: "#D50000", 
+            padding: 10,
+            paddingHorizontal: 32,
+            marginRight: 5
+          }}
+          onPress={props.goBackHome}>
+          <Text>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={props.handleButton}>
+        <TouchableOpacity
+          style = {{ 
+            backgroundColor: "#00C853", 
+            padding: 10,
+            paddingHorizontal: 32,
+            marginLeft: 5
+          }}           
+          onPress={props.handleButton}>
           <Text>Ler outro QRCode</Text>
         </TouchableOpacity>
       </View>
@@ -54,6 +60,7 @@ ModalWebView.propTypes = {
   notify: PropTypes.string.isRequired,
   openLink: PropTypes.func.isRequired,
   handleButton: PropTypes.func.isRequired,
+  goBackHome: PropTypes.func.isRequired,
 
 }
 

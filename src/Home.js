@@ -23,40 +23,44 @@ const Home = class HomeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            nome: this.props.navigation.state.params.nome
+            nome: this.props.navigation.state.params.nome,
+            area: this.props.navigation.state.params.area,
+            evento: this.props.navigation.state.params.evento
         };
 
     }
 
     render(){
-    return (
-      <>
-        <StatusBar barStyle="dark-content" />
-        <SafeAreaView>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            <ImageBackground
-                accessibilityRole={'image'}
-                source={require('./icone_brand2.png')}
-                style={styles.background}
-                imageStyle={styles.logo}>
-                <Text style={styles.text}>Amult Checkin</Text>
-            </ImageBackground>
+        return (
+        <>
+            <StatusBar barStyle="dark-content" />
+            <SafeAreaView>
+            <ScrollView
+                contentInsetAdjustmentBehavior="automatic"
+                style={styles.scrollView}>
+                <ImageBackground
+                    accessibilityRole={'image'}
+                    source={require('./icone_brand2.png')}
+                    style={styles.background}
+                    imageStyle={styles.logo}>
+                    <Text style={styles.text}>Amult Checkin</Text>
+                </ImageBackground>
 
-            <View style={styles.body}>
+                <View style={styles.body}>
 
-              <View style={styles.sectionContainer}>
-                  <Text style={styles.mBottom40}>Olá, {this.state.nome}</Text>
-                  <Button color="#ec6b15" style={styles.buttonSend}  title="Acessar a Câmera" onPress={()=>this.props.navigation.navigate('Camera')} />
-              </View>
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.mBottom16}>Olá, {this.state.nome}!</Text>
+                    <Text style={styles.mBottom16}>Evento {this.state.evento}</Text>
+                    <Text style={styles.mBottom40}>Setor {this.state.area}</Text>
+                    <Button color="#ec6b15" style={styles.buttonSend}  title="Câmera" onPress={()=>this.props.navigation.navigate('Camera')} />
+                </View>
 
-            </View>
+                </View>
 
-          </ScrollView>
-        </SafeAreaView>
-      </>
-    );
+            </ScrollView>
+            </SafeAreaView>
+        </>
+        );
   }
 };
 
@@ -122,6 +126,9 @@ const styles = StyleSheet.create({
     },
     mBottom40: {
         marginBottom: 40
+    },
+    mBottom16: {
+        marginBottom: 16
     },
     background: {
         paddingBottom: 16,
