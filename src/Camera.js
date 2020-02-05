@@ -6,36 +6,43 @@ import {
     AppRegistry,
     StyleSheet,
     Text,
-    TouchableOpacity,
     Linking,
     View,
     Dimensions
 } from 'react-native';
 
-import { RNCamera } from "react-native-camera";
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import ModalWebView from './Modal/ModalWebView';
+
+const { width, height } = Dimensions.get("window");
 
 const Camera = class ScanScreen extends Component {
 
     static navigationOptions = {
-        title: 'Câmera',
-        header: null
+        title: 'Câmera'
     }
 
-    state = {
-        modalVisible: false,
-        success: null,
-        url: "",
-        chaveQR: 654321,
-        notify: {
-            nomeEvento: "",
-            eventoArea: "",
-            usuarioNome: "",
-            usuarioTipo: ""
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalVisible: false,
+            success: null,
+            url: "",
+            chaveQR: 654321,
+            port_login: this.props.navigation.state.params.port_login,
+            port_senha: this.props.navigation.state.params.port_senha,
+            area_id: this.props.navigation.state.params.area_id,
+            evento_id: this.props.navigation.state.params.evento_id,
+            evento_nome: this.props.navigation.state.params.evento_nome,
+            notify: {
+                codEvento: "",
+                nomeEvento: "",
+                eventoArea: "",
+                usuarioNome: "",
+                usuarioTipo: ""
+            }
         }
     };
-    
     openLink = () => {
         Linking.openURL(this.state.url)
         .catch(err =>
@@ -59,16 +66,26 @@ const Camera = class ScanScreen extends Component {
     
     onSuccess = async (e) => {
 
-        const {chaveQR,notify} = this.state;
+        const {
+            port_login,
+            port_senha,
+            evento_nome,
+            evento_id,
+            area_id,
+            chaveQR,
+            notify
+        } = this.state;
 
         if(e.type == 'QR_CODE') {
 
-            console.log(e.type);
-            console.log(e.data);
-            console.log((e.data == " ") ? "_VAZIO_" : e.data);
-            console.log(typeof(e.data));
+            console.log('Tipo do código: ' + e.type);
+            console.log('Número lido: ' + (e.data == " ") ? "_VAZIO_" : e.data);
+            console.log('Tipo da variável: ' + typeof(e.data));
+            console.log(`Evento: ID ${evento_id} / Nome ${evento_nome}`);
+            console.log(`Área ID: ${area_id}`);
+            //console.log(`Porteiro: ${port_login} / ${port_senha}`);
             
-            fetch('https://www.colorbox.art.br/teste/app/scann.php', {
+            fetch('http://www.amultsys.com.br/app/scann.php', {
                 method:'POST',
                 header: {
                     'Accept': 'application/json',
@@ -77,9 +94,13 @@ const Camera = class ScanScreen extends Component {
                 body:JSON.stringify({
                     // we will pass our input data to server
                     chave_qrcode: chaveQR,
-                    numero_qrcode: (e.data == " ") ? "" : e.data
-                })
-                
+                    numero_qrcode: (e.data == " ") ? "" : e.data,
+                    evento: evento_id,
+                    evento_nome: evento_nome,
+                    area: area_id,
+                    port_login: port_login,
+                    port_senha: port_senha
+                })                
             })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -108,14 +129,14 @@ const Camera = class ScanScreen extends Component {
 
                     switch(responseJson.qrcode_ok) {
                         case 0:
-                            erroMsg = 'QRCode vazio';
+                            erroMsg = 'QRCode já utilizado';
                             break;
                         case 2:
-                            erroMsg = 'QRCode inválido';
+                            erroMsg = 'QRCode não localizado';
                             break;
-                        default:
-                            erroMsg = 'Erro não identificado';
-                            break;                        
+                       default:
+                            erroMsg = responseJson.msg;
+                            break;
                     }
 
                     Alert.alert(
@@ -152,9 +173,10 @@ const Camera = class ScanScreen extends Component {
             <View style={styles.container}>
 
                 <QRCodeScanner
+                    showMarker={true}
                     onRead={this.onSuccess}
                     ref={(node) => {this.scanner = node}}
-                    flashMode={RNCamera.Constants.FlashMode.torch}
+                    cameraStyle={{height: height, width: width}}
                 />
                 
                 <ModalWebView 
@@ -164,7 +186,7 @@ const Camera = class ScanScreen extends Component {
                     url={this.state.url} 
                     openLink={this.openLink} 
                     notify={this.state.notify}
-                />
+                    />
             </View>
         );
     }
@@ -173,18 +195,12 @@ const Camera = class ScanScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "column",
-        backgroundColor: "black"
-    },
-    touchable: {
-        padding: 16
+        flexDirection: 'column',
+        backgroundColor: "grey"
     },
     text: {
         fontSize: 21,
         color: "rgb(0,122,255)"
-    },
-    cameraContainer: {
-        height: Dimensions.get('window').height,
     }
 });
 

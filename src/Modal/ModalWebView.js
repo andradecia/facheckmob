@@ -57,7 +57,7 @@ ModalWebView.propTypes = {
 
   modalVisible: PropTypes.bool.isRequired,
   url: PropTypes.string.isRequired,
-  notify: PropTypes.string.isRequired,
+  notify: PropTypes.object.isRequired,
   openLink: PropTypes.func.isRequired,
   handleButton: PropTypes.func.isRequired,
   goBackHome: PropTypes.func.isRequired,

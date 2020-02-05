@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     SafeAreaView,
     StyleSheet,
@@ -44,7 +44,7 @@ const Login = class LoginScreen extends Component {
         
 		else {
 
-            fetch('https://www.colorbox.art.br/teste/app/login.php', {
+            fetch('http://www.amultsys.com.br/app/login.php', {
                 method:'POST',
                 header: {
                     'Accept': 'application/json',
@@ -57,30 +57,33 @@ const Login = class LoginScreen extends Component {
                     senha: UserPassword
                 })
                 
-            }).then((response) => response.json())
-                .then((responseJson) => {
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                
+                console.log(responseJson);
+                
+                if(responseJson.logado == 1) {
                     
-                    console.log(responseJson);
-                    
-                    if(responseJson.logado == 1) {
-                        console.log(responseJson.logado);
-                        this.props.navigation.navigate('Home', { 
-                            nome: UserLogin,
-                            area: responseJson.area,
-                            evento: responseJson.evento_nome
-                        });
-                    }
-                    else{
+                    this.props.navigation.navigate('Home', { 
+                        port_login: UserLogin,
+                        port_senha: UserPassword,
+                        area: responseJson.area,
+                        area_nome: responseJson.area_nome,
+                        evento: responseJson.evento,
+                        evento_nome: responseJson.evento_nome
+                    });
+                }
+                else{
 
-                        alert("Erro ao acessar. Verifique seu login e senha");
-                    }
+                    alert("Erro ao acessar. Verifique seu login e senha");
+                }
 
-                })
-                .catch((error) => {
+            })
+            .catch((error) => {
 
-                    console.error(error);
-                });
-            
+                console.error(error);
+            });
         }
     }
 
@@ -127,7 +130,6 @@ const Login = class LoginScreen extends Component {
                         </View>
 
                     </View>
-
                 </ScrollView>
             </SafeAreaView>
         </>
@@ -148,10 +150,6 @@ const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: Colors.lighter,
     },
-    engine: {
-        position: 'absolute',
-        right: 0,
-    },
     body: {
         paddingBottom: 36,
         backgroundColor: Colors.white,
@@ -159,28 +157,6 @@ const styles = StyleSheet.create({
     sectionContainer: {
         marginTop: 32,
         paddingHorizontal: 24,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: '600',
-        color: Colors.dark,
-    },
-    sectionDescription: {
-        marginTop: 8,
-        fontSize: 18,
-        fontWeight: '400',
-        color: Colors.black,
-    },
-    highlight: {
-    fontWeight: '700',
-    },
-    footer: {
-        color: Colors.dark,
-        fontSize: 12,
-        fontWeight: '600',
-        padding: 4,
-        paddingRight: 12,
-        textAlign: 'right',
     },
     input: {
         color: Colors.dark,
