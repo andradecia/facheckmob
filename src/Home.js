@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import SysConn from './System';
 import {
+    AsyncStorage,
     SafeAreaView,
     StyleSheet,
     ScrollView,
@@ -9,7 +10,8 @@ import {
     StatusBar,
     Button,
     FlatList,
-    ImageBackground
+    ImageBackground,
+    BackHandler
 } from 'react-native';
 
 const Home = class HomeScreen extends Component {
@@ -29,6 +31,23 @@ const Home = class HomeScreen extends Component {
             evento: this.props.navigation.state.params.evento,
             evento_nome: this.props.navigation.state.params.evento_nome
         };
+    }
+
+    logout = async () => {
+        try {
+            await AsyncStorage.setItem('checklogin', JSON.stringify({
+                "responseJson":{"logado":0}
+            }));
+            this.props.navigation.navigate('Login');
+        }
+        catch(e) {
+            // saving error
+            console.log(e);
+        }
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', () => { return true });
     }
 
     opencamera = ()=>this.props.navigation.navigate('Camera', { 
@@ -58,7 +77,7 @@ const Home = class HomeScreen extends Component {
                     <View style={styles.body}>
 
                         <View style={[styles.sectionContainer, styles.btnLogoff]}>
-                            <Button color="#880E4F" style={styles.buttonSend}  title="Sair" onPress={()=>alert('Deslogar...')} />
+                            <Button color="#880E4F" style={styles.buttonSend}  title="Sair" onPress={this.logout} />
                         </View>
 
                         <View style={styles.sectionContainer}>

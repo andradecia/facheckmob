@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {
+    AppState,
+    AsyncStorage,
     SafeAreaView,
     StyleSheet,
     ScrollView,
@@ -9,7 +11,8 @@ import {
     StatusBar,
     Button,
     FlatList,
-    ImageBackground
+    ImageBackground,
+    TouchableOpacity
 } from 'react-native';
 
 const Login = class LoginScreen extends Component {
@@ -22,27 +25,108 @@ const Login = class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            appState: "start",
+            storage: "Loading...",
             UserKey:123456,
             UserLogin:'',
             UserPassword:''
-        };
-    };
+        }
+    }
 
-    login = () => {
+    storeData = async (statusUser) => {
+        try {
+            await AsyncStorage.setItem('checklogin', statusUser);
+            console.log('Data Saved: '+statusUser);
+        }
+        catch(e) {
+            console.log(e);
+        }
+    }
+
+    getData = async () => {
+        try {
+            let valueUser = await AsyncStorage.getItem('checklogin');
+            valueUser = JSON.parse(valueUser);
+
+            if(valueUser.responseJson.logado === 1) {
+
+                fetch('http://www.amultsys.com.br/app/login.php', {
+                    method:'POST',
+                    header: {
+                        'Accept': 'application/json',
+                        'Content-type': 'application/json'
+                    },
+                    body:JSON.stringify({
+                        // We will pass our input data to server
+                        chave: valueUser.UserKey,
+                        login: valueUser.UserLogin,
+                        senha: valueUser.UserPassword
+                    })
+                })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    
+                    if(responseJson.logado == 1) {
+                        
+                        this.props.navigation.navigate('Home', { 
+                            port_login: valueUser.UserLogin,
+                            port_senha: valueUser.UserPassword,
+                            area: valueUser.responseJson.area,
+                            area_nome: valueUser.responseJson.area_nome,
+                            evento: valueUser.responseJson.evento,
+                            evento_nome: valueUser.responseJson.evento_nome
+                        });
+                    }
+                    else{
+                        alert("Login desabilitado. Fale com o supervisor");
+                        this.storeData(JSON.stringify({
+                            "responseJson":{"logado":0}
+                        }));
+                        this.props.navigation.navigate('Login');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            } 
+            else {
+                this.props.navigation.navigate('Login');
+            }
+        }
+        catch(e) {
+            console.log(e);
+        }
+    }
+
+    componentDidMount() {
+        console.log(this.state.appState);
+        AppState.addEventListener('change', this._handleAppStateChange);
+    }
+
+    _handleAppStateChange = (nextAppState) => {
+        if (this.state.appState.match(/start|inactive|background/) && nextAppState === 'active') {
+            console.log('Retornando ao modo '+nextAppState+'!');
+            this.getData();
+        }
+        this.setState({appState: nextAppState});
+    }
+
+    clearField(){
+        this.setState({ UserLogin: '', UserPassword: '' });
+    }
+
+    goLogin = () => {
         
         const {UserKey,UserLogin,UserPassword} = this.state;
-		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // Verifica Email
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // Verifica Email
         
         if(UserLogin == "") {
             alert("Informe seu Login");
-            //this.setState({email:'Please enter Email address'})
-		}
-		else if(UserPassword == "") {
-            alert("Informe sua Senha");
-            //this.setState({email:'Please enter password'})
         }
-        
-		else {
+        else if(UserPassword == "") {
+            alert("Informe sua Senha");
+        }       
+        else {
 
             fetch('http://www.amultsys.com.br/app/login.php', {
                 method:'POST',
@@ -51,20 +135,23 @@ const Login = class LoginScreen extends Component {
                     'Content-type': 'application/json'
                 },
                 body:JSON.stringify({
-                    // we will pass our input data to server
+                    // We will pass our input data to server
                     chave: UserKey,
                     login: UserLogin,
                     senha: UserPassword
                 })
-                
             })
             .then((response) => response.json())
             .then((responseJson) => {
                 
-                console.log(responseJson);
-                
                 if(responseJson.logado == 1) {
                     
+                    this.storeData(JSON.stringify({
+                        UserKey,UserLogin,UserPassword,responseJson
+                    }));
+
+                    this.clearField();
+
                     this.props.navigation.navigate('Home', { 
                         port_login: UserLogin,
                         port_senha: UserPassword,
@@ -75,13 +162,10 @@ const Login = class LoginScreen extends Component {
                     });
                 }
                 else{
-
                     alert("Erro ao acessar. Verifique seu login e senha");
                 }
-
             })
             .catch((error) => {
-
                 console.error(error);
             });
         }
@@ -107,16 +191,18 @@ const Login = class LoginScreen extends Component {
                     <View style={styles.body}>
 
                         <View style={styles.sectionContainer}>
-                            <TextInput 
+                            <TextInput
                                 style={styles.input} 
-                                onChangeText={(UserLogin)=>this.setState({UserLogin})} 
+                                onChangeText={(UserLogin)=>this.setState({UserLogin})}
+                                value={this.state.UserLogin} 
                                 placeholder="LOGIN" />
                         </View>
 
                         <View style={styles.sectionContainer}>
-                            <TextInput 
+                            <TextInput
                                 style={styles.input} 
                                 onChangeText={(UserPassword)=>this.setState({UserPassword})} 
+                                value={this.state.UserPassword} 
                                 placeholder="SENHA" 
                                 secureTextEntry={true} />
                         </View>
@@ -126,7 +212,7 @@ const Login = class LoginScreen extends Component {
                                 color="#ec6b15" 
                                 style={styles.buttonSend} 
                                 title="Entrar" 
-                                onPress={this.login} />
+                                onPress={this.goLogin} />
                         </View>
 
                     </View>
@@ -170,6 +256,12 @@ const styles = StyleSheet.create({
     buttonSend: {
         height: 40,
         color: '#ec6b15'
+    },
+    buttonText: {
+        marginTop: 20,
+        paddingVertical: 10,
+        textAlign: 'center',
+        color: 'grey'
     },
     background: {
         paddingBottom: 40,
